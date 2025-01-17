@@ -1,0 +1,111 @@
+desplegables a añadir:
+
+CONSTRAINTS
+PK -> PRIMARY KEY
+FK -> FOREIGN KEY
+CK -> CHECK
+NN -> NOT NULL
+
+ORDEN:
+1. Imprenta
+2. Editor
+3. Autor
+4. Libro
+5. Libro-Autor 
+
+CREATE Table IMPRENTA(
+id_imprenta NUMBER(4),
+nombre_imprenta VARCHAR2(15),
+ubicacion_imprenta VARCHAR2(22), 
+contacto_imprenta NUMBER(9),
+CONSTRAINT PK_id_Imprenta PRIMARY KEY (id_imprenta),
+CONSTRAINT NN_nombre_imprenta CHECK (nombre_imprenta IS NOT NULL),
+CONSTRAINT NN_ubicacion_imprenta CHECK (nombre_imprenta IS NOT NULL),
+CONSTRAINT NN_contacto_imprenta CHECK (contacto_imprenta IS NOT NULL)
+);
+
+CREATE Table EDITOR(
+id_editor NUMBER(4), 
+nombre_editor VARCHAR2(15),
+direccion_editor VARCHAR2(15), 
+email_editor VARCHAR2(20),
+CONSTRAINT PK_id_editor PRIMARY KEY (id_editor),
+CONSTRAINT UQ_email_editor UNIQUE (email_editor), 
+CONSTRAINT NN_nombre_editor CHECK (nombre_editor IS NOT NULL),
+CONSTRAINT NN_direccion_editor CHECK (direccion_editor IS NOT NULL),
+CONSTRAINT NN_email_editor CHECK (email_editor IS NOT NULL)
+);
+
+CREATE Table AUTOR(
+id_autor NUMBER(4),
+nombre_autor VARCHAR2(14), 
+pseudonimo_autor VARCHAR2(14),
+nacionalidad_autor VARCHAR2(20),
+CONSTRAINT PK_id_autor PRIMARY KEY (id_autor), 
+CONSTRAINT UQ_nombre_autor UNIQUE (nombre_autor), 
+CONSTRAINT NN_nombre_autor CHECK (nombre_autor IS NOT NULL), 
+CONSTRAINT NN_pseudonimo_autor CHECK (pseudonimo_autor IS NOT NULL),
+CONSTRAINT NN_nacionalidad_autor CHECK (nacionalidad_autor IS NOT NULL)
+);
+
+CREATE Table LIBRO(
+id_libro NUMBER(4),
+titulo_libro VARCHAR2(15),
+estado_libro VARCHAR2(20),
+id_autor NUMBER(4),
+id_editor NUMBER(4),
+id_imprenta NUMBER(4),
+CONSTRAINT PK_id_libro PRIMARY KEY (id_libro),
+CONSTRAINT FK_id_autor FOREIGN KEY (id_autor) REFERENCES AUTOR (id_autor),
+CONSTRAINT FK_id_editor FOREIGN KEY (id_editor) REFERENCES EDITOR (id_editor),
+CONSTRAINT FK_id_imprenta FOREIGN KEY (id_imprenta) REFERENCES IMPRENTA (id_imprenta),
+CONSTRAINT UQ_titulo_libro UNIQUE (titulo_libro),
+CONSTRAINT NN_titulo_libro CHECK (titulo_libro IS NOT NULL),
+CONSTRAINT NN_estado_libro CHECK (estado_libro IS NOT NULL)
+);
+
+CREATE TABLE REGISTRO(
+id_libro NUMBER(4),    
+id_autor NUMBER(4),
+fecha_libro DATE,
+CONSTRAINT PK_DOBLE_REGISTRO PRIMARY KEY (id_libro, id_autor), 
+CONSTRAINT FK_NM_id_libro FOREIGN KEY (id_libro) REFERENCES LIBRO (id_libro),
+CONSTRAINT FK_NM_id_autor FOREIGN KEY (id_autor) REFERENCES AUTOR (id_autor),
+CONSTRAINT NN_fecha_libro CHECK (fecha_libro IS NOT NULL) 
+);
+
+INSERTS:
+
+--IMPRENTA--
+(id_imprenta, nombre_imprenta, ubicacion_imprenta, contacto_imprenta) 
+INSERT INTO IMPRENTA VALUES  (1, 'Imprenta Norte', 'Madrid', 912345678);
+INSERT INTO IMPRENTA VALUES  (2, 'Impresores del Sur', 'Sevilla', 954123456);
+INSERT INTO IMPRENTA VALUES  (3, 'Editorial Este', 'Valencia', 963852741);
+INSERT INTO IMPRENTA VALUES  (4, 'Publicaciones Oeste', 'Badajoz', 924567890);
+
+--EDITOR--
+(id_editor, nombre_editor, direccion_editor, email_editor) 
+INSERT INTO EDITOR VALUES (1, 'Editor Central', 'Calle Mayor 12', 'central@editorial.com');
+INSERT INTO EDITOR VALUES (2, 'Editor Moderno', 'Avenida Sol 45', 'moderno@editorial.com');
+INSERT INTO EDITOR VALUES (3, 'Editor Clásico', 'Plaza Luna 7', 'clasico@editorial.com');
+INSERT INTO EDITOR VALUES (4, 'Editor Digital', 'Calle Tech 32', 'digital@editorial.com');
+
+--AUTOR--
+(id_editor, nombre_editor, direccion_editor, email_editor) 
+INSERT INTO EDITOR VALUES (1, 'Editor Central', 'Calle Mayor 12', 'central@editorial.com');
+INSERT INTO EDITOR VALUES (2, 'Editor Moderno', 'Avenida Sol 45', 'moderno@editorial.com');
+INSERT INTO EDITOR VALUES (3, 'Editor Clásico', 'Plaza Luna 7', 'clasico@editorial.com');
+INSERT INTO EDITOR VALUES (4, 'Editor Digital', 'Calle Tech 32', 'digital@editorial.com');
+
+--LIBRO--
+(id_libro, titulo_libro, estado_libro, id_autor, id_editor, id_imprenta) 
+INSERT INTO LIBRO VALUES (1, 'El Sol y la Luna', 'Disponible', 1, 1, 1);
+INSERT INTO LIBRO VALUES (2, 'Viaje al Centro', 'Prestado', 2, 2, 2);
+INSERT INTO LIBRO VALUES (3, 'Historias Ocultas', 'Disponible', 3, 3, 3);
+INSERT INTO LIBRO VALUES (4, 'Caminos Perdidos', 'Reservado', 4, 4, 4);
+
+--REGISTRO--(id_libro, id_autor, fecha_libro) 
+INSERT INTO REGISTRO VALUES (1, 1, TO_DATE('2023-01-15', 'YYYY-MM-DD'));
+INSERT INTO REGISTRO VALUES (2, 2, TO_DATE('2023-02-10', 'YYYY-MM-DD'));
+INSERT INTO REGISTRO VALUES (3, 3, TO_DATE('2023-03-05', 'YYYY-MM-DD'));
+INSERT INTO REGISTRO VALUES (4, 4, TO_DATE('2023-04-20', 'YYYY-MM-DD'));
