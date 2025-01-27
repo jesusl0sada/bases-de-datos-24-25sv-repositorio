@@ -212,6 +212,121 @@ SELECT TEMA, EJEMPLARES
 FROM LIBRERIA
 WHERE EJEMPLARES NOT BETWEEN 15 AND 20;
 
+TEMA            EJEMPLARES
+--------------- ----------
+ECONOMIA                10
+DEPORTES                 8
+FILOSOFIA                7
+DIBUJO                  10
+BIOLOGIA                11
+GEOLOGIA                 7
+SOCIEDAD                 9
+JARDINERIA               6
+
+
+TABLAS ALUMNOS, ASIGNATURAS Y NOTAS...
+
+11. VISUALIZA TODAS LAS ASIGNATURAS QUE CONTENGAN TRES LETRAS "O" EN SU INTERIOR Y TENGAN
+ALUMNOS MATRICULADOS DE "MADRID":
+
+SELECT COD, NOMBRE
+FROM ASIGNATURAS
+WHERE
+NOMBRE LIKE '%o%o%o%'
+AND (
+SELECT COUNT(*)
+FROM NOTAS, ALUMNOS
+WHERE NOTAS.DNI = ALUMNOS.DNI
+AND NOTAS.COD = ASIGNATURAS.COD
+AND ALUMNOS.POBLA = 'Madrid'
+) > 0;
+
+       COD NOMBRE
+---------- -------------------------
+         6 Entornos Gráficos
+
+12.  VISUALIZA LOS NOMBRES DE ALUMNOS DE "MADRID" QUE TENGAN ALGUNA ASIGNATURA
+SUSPENDIDA.
+
+SELECT DNI, APENOM, TELEF
+FROM ALUMNOS 
+WHERE POBLA = 'Madrid';  
+
+(estos serían los alumnos únicamente de Madrid)
+
+SELECT DNI, APENOM, TELEF
+FROM ALUMNOS
+WHERE POBLA = 'Madrid'
+AND (
+SELECT COUNT(*)
+FROM NOTAS, ASIGNATURAS
+WHERE NOTAS.DNI = ALUMNOS.DNI
+AND NOTAS.COD = ASIGNATURAS.COD
+AND NOTAS.NOTA < 5
+) < 5;
+
+DNI        APENOM                         TELEF
+---------- ------------------------------ ----------
+12344345   Alcalde García, Elena          917766545
+4448242    Cerrato Vela, Luis             916566545
+
+
+13. MUESTRA LOS NOMBRES DE ALUMNOS QUE TENGAN LA MISMA NOTA QUE TIENE "Díaz Fernández, María" En "FOL" en 
+alguna asignatura.
+
+1. BUSCAMOS A "Díaz Fernández, María":
+
+SELECT DNI, APENOM
+FROM ALUMNOS
+WHERE APENOM = 'Díaz Fernández, María';
+
+DNI        APENOM
+---------- ------------------------------
+56882942   Díaz Fernández, María
+
+DNI: 56882942
+APENOM: 'Díaz Fernández, María'
+
+2. VEMOS LA NOTA DE FOL DE DÍAZ FERNÁNDEZ, MARÍA
+
+SELECT COD, NOTA
+FROM ALUMNOS, NOTAS, ASIGNATURAS
+WHERE ALUMNOS.DNI = NOTAS.DNI
+AND COD.ASIGNATURAS = COD.NOTAS
+AND ALUMNOS.DNI = 56882942
+AND ASIGNATURAS.NOMBRE = 'FOL';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

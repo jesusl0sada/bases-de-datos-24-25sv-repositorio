@@ -1,0 +1,244 @@
+TABLAS E INSERTS:
+
+-- TABLA IMPRENTA
+CREATE TABLE IMPRENTA (
+    id_imprenta NUMBER(4),
+    nombre_imprenta VARCHAR2(15),
+    ubicacion_imprenta VARCHAR2(22),
+    contacto_imprenta NUMBER(9),
+    CONSTRAINT PK_id_Imprenta PRIMARY KEY (id_imprenta),
+    CONSTRAINT NN_nombre_imprenta CHECK (nombre_imprenta IS NOT NULL),
+    CONSTRAINT NN_ubicacion_imprenta CHECK (ubicacion_imprenta IS NOT NULL),
+    CONSTRAINT NN_contacto_imprenta CHECK (contacto_imprenta IS NOT NULL)
+);
+
+-- TABLA EDITOR
+CREATE TABLE EDITOR (
+    id_editor NUMBER(4),
+    nombre_editor VARCHAR2(15),
+    direccion_editor VARCHAR2(15),
+    email_editor VARCHAR2(20),
+    CONSTRAINT PK_id_editor PRIMARY KEY (id_editor),
+    CONSTRAINT UQ_email_editor UNIQUE (email_editor),
+    CONSTRAINT NN_nombre_editor CHECK (nombre_editor IS NOT NULL),
+    CONSTRAINT NN_direccion_editor CHECK (direccion_editor IS NOT NULL),
+    CONSTRAINT NN_email_editor CHECK (email_editor IS NOT NULL)
+);
+
+-- TABLA AUTOR
+CREATE TABLE AUTOR (
+    id_autor NUMBER(4),
+    nombre_autor VARCHAR2(14),
+    pseudonimo_autor VARCHAR2(14),
+    nacionalidad_autor VARCHAR2(20),
+    id_editor NUMBER(4),
+    CONSTRAINT PK_id_autor PRIMARY KEY (id_autor),
+    CONSTRAINT UQ_nombre_autor UNIQUE (nombre_autor),
+    CONSTRAINT NN_nombre_autor CHECK (nombre_autor IS NOT NULL),
+    CONSTRAINT NN_pseudonimo_autor CHECK (pseudonimo_autor IS NOT NULL),
+    CONSTRAINT NN_nacionalidad_autor CHECK (nacionalidad_autor IS NOT NULL),
+    CONSTRAINT FK_id_editor FOREIGN KEY (id_editor) REFERENCES EDITOR (id_editor)
+);
+
+-- TABLA LIBRO
+CREATE TABLE LIBRO (
+    id_libro NUMBER(4),
+    titulo_libro VARCHAR2(15),
+    estado_libro VARCHAR2(20),
+    id_autor NUMBER(4),
+    id_editor NUMBER(4),
+    id_imprenta NUMBER(4),
+    CONSTRAINT PKK_id_libro PRIMARY KEY (id_libro),
+    CONSTRAINT FKK_id_autor FOREIGN KEY (id_autor) REFERENCES AUTOR (id_autor),
+    CONSTRAINT FKK_id_editor FOREIGN KEY (id_editor) REFERENCES EDITOR (id_editor),
+    CONSTRAINT FKK_id_imprenta FOREIGN KEY (id_imprenta) REFERENCES IMPRENTA (id_imprenta),
+    CONSTRAINT UQ_titulo_libro UNIQUE (titulo_libro),
+    CONSTRAINT NN_titulo_libro CHECK (titulo_libro IS NOT NULL),
+    CONSTRAINT NN_estado_libro CHECK (estado_libro IS NOT NULL)
+);
+
+-- TABLA REGISTRO
+CREATE TABLE REGISTRO (
+    id_libro NUMBER(4),
+    id_autor NUMBER(4),
+    fecha_libro DATE,
+    CONSTRAINT PK_DOBLE_REGISTRO PRIMARY KEY (id_libro, id_autor),
+    CONSTRAINT FK_NM_id_libro FOREIGN KEY (id_libro) REFERENCES LIBRO (id_libro),
+    CONSTRAINT FK_NM_id_autor FOREIGN KEY (id_autor) REFERENCES AUTOR (id_autor),
+    CONSTRAINT NN_fecha_libro CHECK (fecha_libro IS NOT NULL)
+);
+
+-- INSERTS PARA TABLA IMPRENTA
+INSERT INTO IMPRENTA VALUES (1, 'Imprenta Alfa', 'Madrid', 123456789);
+INSERT INTO IMPRENTA VALUES (2, 'Imprenta Beta', 'Barcelona', 987654321);
+INSERT INTO IMPRENTA VALUES (3, 'Imprenta Gamma', 'Valencia', 456789123);
+
+-- INSERTS PARA TABLA EDITOR
+INSERT INTO EDITOR VALUES (1, 'Lalo Lález', 'Calle A', 'lalo@editorial.com');
+INSERT INTO EDITOR VALUES (2, 'Pepe Pérez', 'Calle B', 'pepe@editorial.com');
+INSERT INTO EDITOR VALUES (3, 'Ana Anés', 'Calle C', 'ana@editorial.com');
+
+-- INSERTS PARA TABLA AUTOR
+INSERT INTO AUTOR VALUES (1, 'Lolo Lólez', 'Lolo', 'Española', 1);
+INSERT INTO AUTOR VALUES (2, 'María Martín', 'Marimar', 'Mexicana', 2);
+INSERT INTO AUTOR VALUES (3, 'Juan Juárez', 'Juano', 'Argentina', 3);
+
+-- INSERTS PARA TABLA LIBRO
+INSERT INTO LIBRO VALUES (1, 'El Sol Brilla', 'En revisión', 1, 1, 1);
+INSERT INTO LIBRO VALUES (2, 'La Luna Llena', 'Publicado', 2, 2, 2);
+INSERT INTO LIBRO VALUES (3, 'Estrella Fugaz', 'Publicado', 3, 1, 3);
+INSERT INTO LIBRO VALUES (4, 'Noche de Verano', 'En revisión', 1, 3, 2);
+
+-- INSERTS PARA TABLA REGISTRO
+INSERT INTO REGISTRO VALUES (1, 1, TO_DATE('2023-01-01', 'YYYY-MM-DD'));
+INSERT INTO REGISTRO VALUES (4, 1, TO_DATE('2023-04-01', 'YYYY-MM-DD'));
+
+-  Nombre de todos los autores que tenemos
+-  Nombre de los editores
+-  Nombre de los editores que trabajan con el libro "El Sol Brilla"
+-  Nombre de los libros que ha editado "Lalo Lález"
+-  Los libros que aún están en revisión
+-  Los nombres de imprenta que me han impreso algún libro
+-  Los nombres de imprenta que me han impreso algún libro del autor "Lolo Lólez"
+
+TABLAS:
+
+-IMPRENTA
+-EDITOR
+-AUTOR
+-LIBRO
+-REGISTRO
+
+1. Nombre de todos los autores que tenemos 
+
+SELECT NOMBRE_AUTOR
+FROM AUTOR;
+
+NOMBRE_AUTOR
+--------------
+Lolo Lólez
+Juan Juárez
+Nuevo Autor
+
+2. Nombre de los editores 
+
+SELECT NOMBRE_EDITOR
+FROM EDITOR;
+
+NOMBRE_EDITOR
+---------------
+Lalo Lález
+Pepe Pérez
+Ana Anés
+
+3. Nombre de los editores que trabajan con el libro "El Sol Brilla":
+
+SELECT NOMBRE_EDITOR
+FROM EDITOR, LIBRO
+WHERE EDITOR.ID_EDITOR = LIBRO.ID_LIBRO 
+AND TITULO_LIBRO = 'El Sol Brilla';
+
+NOMBRE_EDITOR
+---------------
+Lalo Lález
+
+
+4. Nombre de los libros que ha editado "Lalo Lález"
+
+SELECT TITULO_LIBRO , NOMBRE_EDITOR
+FROM EDITOR , LIBRO 
+WHERE EDITOR.ID_EDITOR = LIBRO.ID_EDITOR
+AND NOMBRE_EDITOR = 'Lalo Lález';
+
+TITULO_LIBRO    NOMBRE_EDITOR
+--------------- ---------------
+El Sol Brilla   Lalo Lález
+Estrella Fugaz  Lalo Lález
+
+
+5. Los Libros que aún están en revisión / Cantidad de libros que aún están en revisión: 
+
+Los Libros que aún están en revisión:
+
+SELECT TITULO_LIBRO, ESTADO_LIBRO, NOMBRE_AUTOR
+FROM LIBRO, AUTOR
+WHERE AUTOR.ID_AUTOR = LIBRO.ID_LIBRO
+AND ESTADO_LIBRO = 'En revisión';
+
+/////
+
+SELECT TITULO_LIBRO, ESTADO_LIBRO 
+FROM LIBRO
+WHERE ESTADO_LIBRO = 'En revisión';
+
+CANTIDAD DE LIBROS EN REVISIÓN
+
+SELECT COUNT(*) AS CANTIDAD_LIBROS_EN_REVISION
+FROM LIBRO
+WHERE ESTADO_LIBRO = 'En revisión';
+
+6. Los nombres de imprenta que me han impreso algún libro ( ALGÚN LIBRO -- > WHERE EXISTS SELECT ONE) 
+
+SELECT NOMBRE_IMPRENTA
+FROM IMPRENTA 
+WHERE EXISTS (
+SELECT 1 
+FROM IMPRENTA, LIBRO 
+WHERE IMPRENTA.ID_IMPRENTA = LIBRO.ID_IMPRENTA
+AND ESTADO_LIBRO = 'Publicado'
+);
+
+NOMBRE_IMPRENTA
+---------------
+Imprenta Alfa
+Imprenta Beta
+Imprenta Gamma
+
+
+7. Los nombres de imprenta que me han impreso algún libro del autor "Lolo Lólez"
+
+// Es decir que hayan trabajado con el autor y al menos una imprenta salga asociada con el autor. 
+
+SELECT NOMBRE_IMPRENTA
+FROM IMPRENTA 
+WHERE EXISTS (
+SELECT 1 
+FROM LIBRO, AUTOR
+WHERE LIBRO.ID_AUTOR = AUTOR.ID_AUTOR
+AND LIBRO.ID_IMPRENTA = IMPRENTA.ID_IMPRENTA
+AND AUTOR.NOMBRE_AUTOR = 'Lolo Lólez'
+);
+
+NOMBRE_IMPRENTA
+---------------
+Imprenta Alfa
+Imprenta Beta
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
