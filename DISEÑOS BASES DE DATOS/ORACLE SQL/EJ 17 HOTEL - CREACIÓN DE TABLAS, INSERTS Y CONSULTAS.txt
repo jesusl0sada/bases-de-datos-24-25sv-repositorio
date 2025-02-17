@@ -100,12 +100,21 @@ INSERT INTO HOTEL (id_hotel, id_categoria, nombre_hotel, direccion_hotel, telefo
 VALUES (2, 3, 'ZaraHotel2', 'Zaragoza', 987654322, 2010);
 INSERT INTO HOTEL (id_hotel, id_categoria, nombre_hotel, direccion_hotel, telefono_hotel, anio_construccion_hotel) 
 VALUES (3, 4, 'ZaraHotel3', 'Zaragoza', 987654323, 2015);
+INSERT INTO HOTEL (ID_HOTEL, ID_CATEGORIA, NOMBRE_HOTEL, DIRECCION_HOTEL, TELEFONO_HOTEL, ANIO_CONSTRUCCION_HOTEL)
+VALUES (10, 3, 'Hotel Mdn', 'Madrid', 911234567, 2000);
+INSERT INTO HOTEL (ID_HOTEL, ID_CATEGORIA, NOMBRE_HOTEL, DIRECCION_HOTEL, TELEFONO_HOTEL, ANIO_CONSTRUCCION_HOTEL)
+VALUES (11, 4, 'Hotel Bcn', 'Barcelona', 931234567, 1998);
+
 
 PARTICULAR:
 INSERT INTO PARTICULAR (id_particular, nombre_particular, direccion_particular, telefono_particular) 
 VALUES (1, 'Lolo Lolez', 'Zaragoza', 666111222);
 INSERT INTO PARTICULAR (id_particular, nombre_particular, direccion_particular, telefono_particular) 
 VALUES (2, 'Ana Perez', 'Zaragoza', 666333444);
+INSERT INTO PARTICULAR (ID_PARTICULAR, NOMBRE_PARTICULAR, DIRECCION_PARTICULAR, TELEFONO_PARTICULAR) 
+VALUES (3, 'Juan Pérez', 'Madrid', 600123456);
+INSERT INTO PARTICULAR (ID_PARTICULAR, NOMBRE_PARTICULAR, DIRECCION_PARTICULAR, TELEFONO_PARTICULAR) 
+VALUES (4, 'María López', 'Madrid', 600654321);
 
 HABITACION:
 INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitacion) VALUES (1, 1, 'Suite', 2);
@@ -113,6 +122,9 @@ INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitac
 INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitacion) VALUES (3, 2, 'Suite', 3);
 INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitacion) VALUES (4, 2, 'Doble', 2);
 INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitacion) VALUES (5, 3, 'Suite', 4);
+INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitacion) VALUES (6, 10, 'Suite', 2);
+INSERT INTO HABITACION (id_habitacion, id_hotel, tipo_habitacion, planta_habitacion) VALUES (7, 11, 'Doble', 3);
+
 
 AGENCIA:
 INSERT INTO AGENCIA (id_agencia, nombre_agencia, direccion_agencia, telefono_agencia) 
@@ -131,6 +143,11 @@ INSERT INTO REGISTRO_PARTICULAR (id_particular, id_habitacion, fecha_inicio_part
 VALUES (1, 4, SYSDATE-25, SYSDATE-20);
 INSERT INTO REGISTRO_PARTICULAR (id_particular, id_habitacion, fecha_inicio_particular, fecha_fin_particular) 
 VALUES (2, 5, SYSDATE-5, SYSDATE-2);
+INSERT INTO REGISTRO_PARTICULAR (id_particular, id_habitacion, fecha_inicio_particular, fecha_fin_particular) 
+VALUES (3, 6, TO_DATE('15-12-2024', 'DD-MM-YYYY'), TO_DATE('20-12-2024', 'DD-MM-YYYY'));
+INSERT INTO REGISTRO_PARTICULAR (id_particular, id_habitacion, fecha_inicio_particular, fecha_fin_particular) 
+VALUES (4, 7, TO_DATE('10-11-2024', 'DD-MM-YYYY'), TO_DATE('15-11-2024', 'DD-MM-YYYY'));
+
 
 REGISTRO-AGENCIA:
 INSERT INTO REGISTRO_AGENCIA (id_agencia, id_habitacion, nombre_encargado_reserva, fecha_inicio_agencia, fecha_fin_agencia) 
@@ -161,15 +178,25 @@ WHERE HOTEL.ID_CATEGORIA = CATEGORIA.ID_CATEGORIA
 AND HOTEL.ID_CATEGORIA = 3
 AND HOTEL.DIRECCION_HOTEL = 'Zaragoza';
 
+NOMBRE_HOT DESCRIPCION_CATEGORIA DIRECCION_HOTEL
+---------- -------------------- --------------------
+ZaraHotel1 3 estrellas          Zaragoza
+ZaraHotel2 3 estrellas          Zaragoza
+
 Las suites que tengo en los hoteles de 3 estrellas que tengo en Zaragoza
 
-SELECT NOMBRE_HOTEL, DESCRIPCION_CATEGORIA, DIRECCION_HOTEL, TIPO_HABITACION
+SELECT NOMBRE_HOTEL, DESCRIPCION_CATEGORIA, DIRECCION_HOTEL, HABITACION.ID_HABITACION, TIPO_HABITACION
 FROM HOTEL, CATEGORIA, HABITACION
 WHERE HOTEL.ID_CATEGORIA = CATEGORIA.ID_CATEGORIA
 AND HOTEL.ID_HOTEL = HABITACION.ID_HOTEL 
 AND HOTEL.ID_CATEGORIA = 3
 AND UPPER (HOTEL.DIRECCION_HOTEL) = 'ZARAGOZA'
 AND HABITACION.TIPO_HABITACION = 'Suite';
+
+NOMBRE_HOT DESCRIPCION_CATEGORI DIRECCION_HOTEL      ID_HABITACION TIPO_HABIT
+---------- -------------------- -------------------- ------------- ----------
+ZaraHotel1 3 estrellas          Zaragoza                         1 Suite
+ZaraHotel2 3 estrellas          Zaragoza                         3 Suite
 
 Las suites libres que tengo para hoy en los hoteles de 3 estrellas que tengo en Zaragoza
 
@@ -204,6 +231,10 @@ AND HABITACION.ID_HABITACION = REGISTRO_PARTICULAR.ID_HABITACION
 AND PARTICULAR.NOMBRE_PARTICULAR = 'Lolo Lolez'
 AND SYSDATE BETWEEN REGISTRO_PARTICULAR.FECHA_INICIO_PARTICULAR AND REGISTRO_PARTICULAR.FECHA_FIN_PARTICULAR;
 
+NOMBRE_HOT ID_HABITACION NOMBRE_PARTICUL
+---------- ------------- ---------------
+ZaraHotel1             1 Lolo Lolez
+ZaraHotel1             1 Lolo Lolez
 
 Las reservas de los últimos 30 días que tiene el cliente "Lolo Lolez"
 
@@ -216,11 +247,19 @@ AND HABITACION.ID_HABITACION = REGISTRO_PARTICULAR.ID_HABITACION
 AND PARTICULAR.NOMBRE_PARTICULAR = 'Lolo Lolez'
 AND REGISTRO_PARTICULAR.FECHA_INICIO_PARTICULAR >= SYSDATE - 30;
 
+NOMBRE_HOT ID_HABITACION NOMBRE_PARTICUL
+---------- ------------- ---------------
+ZaraHotel1             1 Lolo Lolez
+ZaraHotel2             3 Lolo Lolez
+ZaraHotel2             4 Lolo Lolez
+ZaraHotel1             1 Lolo Lolez
+ZaraHotel2             3 Lolo Lolez
+ZaraHotel2             4 Lolo Lolez
 
-    * Las reservas de los últimos 30 días que tiene el cliente "Lolo Lolez" en hoteles de 3 estrellas de Zaragoza
+Las reservas de los últimos 30 días que tiene el cliente "Lolo Lolez" en hoteles de 3 estrellas de Zaragoza
 
 
-SELECT HOTEL.NOMBRE_HOTEL, HABITACION.ID_HABITACION, PARTICULAR.NOMBRE_PARTICULAR, DESCRIPCION_CATEGORIA
+SELECT DISTINCT HOTEL.NOMBRE_HOTEL, HABITACION.ID_HABITACION, PARTICULAR.NOMBRE_PARTICULAR, DESCRIPCION_CATEGORIA
 FROM HOTEL, HABITACION, PARTICULAR, REGISTRO_PARTICULAR, CATEGORIA
 WHERE HOTEL.ID_HOTEL = HABITACION.ID_HOTEL 
 AND PARTICULAR.ID_PARTICULAR = REGISTRO_PARTICULAR.ID_PARTICULAR
@@ -231,19 +270,76 @@ AND HOTEL.ID_CATEGORIA = 3
 AND UPPER(HOTEL.DIRECCION_HOTEL) = 'ZARAGOZA'
 AND REGISTRO_PARTICULAR.FECHA_INICIO_PARTICULAR >= SYSDATE - 30;
 
+NOMBRE_HOT ID_HABITACION NOMBRE_PARTICUL DESCRIPCION_CATEGORI
+---------- ------------- --------------- --------------------
+ZaraHotel1             1 Lolo Lolez      3 estrellas
+ZaraHotel2             3 Lolo Lolez      3 estrellas
+ZaraHotel2             4 Lolo Lolez      3 estrellas
+
+(CON EL DISTINCT EVITAMOS QUE SALGAN EL DOBLE DE VECES) 
+
+EXTRA:
+
+   *  Los hoteles de 3 estrellas que tengo en Zaragoza que NO han sido reservados en la última semana (los últimos 7 días)
+   *  Los particulares de Madrid que no han reservado hotel en Zaragoza en el último mes
+   *  Los particulares de Madrid que no han reservado hotel en Zaragoza de 3 estrellas en el último mes
 
 
+Los hoteles de 3 estrellas que tengo en Zaragoza que NO han sido reservados en la última semana (los últimos 7 días)
+
+SELECT HOTEL.NOMBRE_HOTEL, HOTEL.DIRECCION_HOTEL, HOTEL.TELEFONO_HOTEL, HOTEL.ID_CATEGORIA
+FROM HOTEL, CATEGORIA, HABITACION
+WHERE HOTEL.ID_CATEGORIA = CATEGORIA.ID_CATEGORIA
+AND HABITACION.ID_HOTEL = HOTEL.ID_HOTEL
+AND UPPER(HOTEL.DIRECCION_HOTEL) = 'ZARAGOZA'
+AND HOTEL.ID_CATEGORIA = 3
+AND HABITACION.ID_HABITACION NOT IN (SELECT REGISTRO_PARTICULAR.ID_HABITACION
+FROM REGISTRO_PARTICULAR
+WHERE FECHA_FIN_PARTICULAR >= SYSDATE-7)
+AND 
+HABITACION.ID_HABITACION NOT IN (SELECT REGISTRO_AGENCIA.ID_HABITACION
+FROM REGISTRO_AGENCIA
+WHERE FECHA_FIN_AGENCIA >= SYSDATE-7);
+
+NOMBRE_HOT DIRECCION_HOTEL      TELEFONO_HOTEL ID_CATEGORIA
+---------- -------------------- -------------- ------------
+ZaraHotel1 Zaragoza                  987654321            3
 
 
+Los particulares de Madrid que no han reservado hotel en zaragoza en el último mes. 
 
+SELECT PARTICULAR.NOMBRE_PARTICULAR, PARTICULAR.DIRECCION_PARTICULAR, PARTICULAR.TELEFONO_PARTICULAR
+FROM PARTICULAR 
+WHERE UPPER (PARTICULAR.DIRECCION_PARTICULAR) = 'MADRID'
+AND PARTICULAR.ID_PARTICULAR NOT IN (SELECT REGISTRO_PARTICULAR.ID_PARTICULAR
+FROM REGISTRO_PARTICULAR, HABITACION, HOTEL  
+WHERE HOTEL.ID_HOTEL = HABITACION.ID_HOTEL
+AND REGISTRO_PARTICULAR.ID_HABITACION = HABITACION.ID_HABITACION
+AND UPPER (HOTEL.DIRECCION_HOTEL) = 'ZARAGOZA'
+AND FECHA_FIN_PARTICULAR >= SYSDATE-30);
 
+NOMBRE_PARTICUL DIRECCION_PARTICULAR TELEFONO_PARTICULAR
+--------------- -------------------- -------------------
+Juan Pérez      Madrid                         600123456
+María López     Madrid                         600654321
 
+Los particulares de Madrid que no han reservado hotel en Zaragoza de 3 estrellas en el último mes
 
+(Es como la de antes pero metiendo una condicion mas con el AND) 
 
+SELECT PARTICULAR.NOMBRE_PARTICULAR, PARTICULAR.DIRECCION_PARTICULAR, PARTICULAR.TELEFONO_PARTICULAR
+FROM PARTICULAR 
+WHERE UPPER (PARTICULAR.DIRECCION_PARTICULAR) = 'MADRID'
+AND PARTICULAR.ID_PARTICULAR NOT IN (SELECT REGISTRO_PARTICULAR.ID_PARTICULAR
+FROM REGISTRO_PARTICULAR, HABITACION, HOTEL, CATEGORIA
+WHERE HOTEL.ID_HOTEL = HABITACION.ID_HOTEL
+AND CATEGORIA.ID_CATEGORIA = HOTEL.ID_CATEGORIA
+AND REGISTRO_PARTICULAR.ID_HABITACION = HABITACION.ID_HABITACION
+AND HOTEL.ID_CATEGORIA = 3
+AND UPPER (HOTEL.DIRECCION_HOTEL) = 'ZARAGOZA'
+AND FECHA_FIN_PARTICULAR >= SYSDATE-30);
 
-
-
-
-
-
-
+NOMBRE_PARTICUL DIRECCION_PARTICULAR TELEFONO_PARTICULAR
+--------------- -------------------- -------------------
+Juan Pérez      Madrid                         600123456
+María López     Madrid                         600654321
