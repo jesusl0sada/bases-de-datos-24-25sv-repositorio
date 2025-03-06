@@ -1,0 +1,95 @@
+5 EJS CONSULTAS: 
+
+1.	(10%) Servicios que tenemos de descripción “MANTENIMIENTO” con más de 150 Euros de coste.
+2.	(15% ) Tipo de pago de TODOS los Servicios que tenemos de descripción “MANTENIMIENTO” con más de 150 Euros de coste.
+3.	(25%) Matrícula de vehículos que hayan sido comprados por clientes pero todavía NO vendidos por ellos.
+4.	(25%) DNI y teléfono de los clientes que hayan comprado algún coche en los últimos 30 días.
+5.	(25%) Número total de coches que hayan tenido algún servicio de “MANTENIMIENTO” con más de 150 Euros de coste.
+
+
+
+
+1. Servicios que tenemos de descripción “MANTENIMIENTO” con más de 150 Euros de coste.
+
+
+SELECT ID_SERVICIO, DESCRIPCION_SERVICIO, PRECIO_SERVICIO
+FROM SERVICIOS
+WHERE DESCRIPCION_SERVICIO = 'MANTENIMIENTO'
+AND PRECIO_SERVICIO > 150;
+
+ID_SERVICIO DESCRIPCION_SER PRECIO_SERVICIO
+----------- --------------- ---------------
+          1 MANTENIMIENTO               200
+
+
+2.	(15% ) Tipo de pago de TODOS los Servicios que tenemos de descripción “MANTENIMIENTO” con más de 150 Euros de coste.
+
+
+TIPO DE PAGO DE LOS SERVICIOS EN LOS QUE LA DESCRIPCION ES MANTENIMIENTO Y SON MAS DE 150 EUROS
+
+
+SELECT PAGOS.ID_PAGO, PAGOS.ID_SERVICIO, PAGOS.MODO_PAGO, SERVICIOS.ID_SERVICIO, SERVICIOS.DESCRIPCION_SERVICIO, SERVICIOS.PRECIO_SERVICIO
+FROM SERVICIOS, PAGOS
+WHERE SERVICIOS.ID_SERVICIO = PAGOS.ID_SERVICIO
+AND SERVICIOS.DESCRIPCION_SERVICIO = 'MANTENIMIENTO'
+AND SERVICIOS.PRECIO_SERVICIO > 150;
+
+   ID_PAGO ID_SERVICIO MODO_PAGO     ID_SERVICIO DESCRIPCION_SER PRECIO_SERVICIO
+---------- ----------- ------------- ----------- --------------- ---------------
+         1           1 Tarjeta                 1 MANTENIMIENTO               200
+
+
+
+3.	(25%) Matrícula de vehículos que hayan sido comprados por clientes pero todavía NO vendidos por ellos.
+
+
+QUE TENGAN EL CAMPO FECHA_VENTA EN NULLL
+
+CONECTAS VEHICULOS, CLIENTE_VEHICULOS
+
+SELECT VEHICULOS.ID_VEHICULO, VEHICULOS.MATRICULA_VEHICULO
+FROM VEHICULOS, CLIENTE_VEHICULOS
+WHERE VEHICULOS.ID_VEHICULO = CLIENTE_VEHICULOS.ID_VEHICULO
+AND FECHA_VENTA IS NULL; 
+
+
+ID_VEHICULO MATRICU
+----------- -------
+          1 1234ABC
+          2 5678DEF
+          4 2222JKL
+          5 3333MNO
+
+
+4.	(25%) DNI y teléfono de los clientes que hayan comprado algún coche en los últimos 30 días.
+
+
+SELECT CLIENTE.DNI_CLIENTE , CLIENTE.TELEFONO_CLIENTE
+FROM CLIENTE, CLIENTE_VEHICULOS
+WHERE CLIENTE.DNI_CLIENTE = CLIENTE_VEHICULOS.DNI_CLIENTE
+AND FECHA_COMPRA > SYSDATE-30;
+
+
+DNI_CLIENTE    TELEFONO_CLIENTE
+-------------- ----------------
+98765432D             600445566
+
+Funciona bien. 
+
+
+5. (25%) Número total de coches que hayan tenido algún servicio de “MANTENIMIENTO” con más de 150 Euros de coste.
+
+
+ES DECIR LOS COCHES QUE HAN TENIDO UN SERVICIO DE MANTENIMIENTO (DESCRIPCION = MANTENIMIENTO) Y MAS DE 150 EUROS. 
+NÚMERO TOTAL DE COCHES -> COUNT. 
+
+
+SELECT COUNT(VEHICULOS_SERVICIOS.ID_VEHICULO) AS CONTADOR_VEHICULOS
+FROM SERVICIOS, VEHICULOS_SERVICIOS
+WHERE SERVICIOS.ID_SERVICIO = VEHICULOS_SERVICIOS.ID_SERVICIO
+AND SERVICIOS.DESCRIPCION_SERVICIO = 'MANTENIMIENTO'
+AND SERVICIOS.PRECIO_SERVICIO > 150;
+
+CONTADOR_VEHICULOS
+------------------
+                 2
