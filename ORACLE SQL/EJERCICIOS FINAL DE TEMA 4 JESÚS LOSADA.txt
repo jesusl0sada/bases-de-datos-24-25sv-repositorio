@@ -1,0 +1,169 @@
+-- Ejercicio 1:
+-- Dada la tabla EMPLE, obtiene el sueldo medio, el número de comisiones no nulas, el máximo sueldo y el mínimo sueldo de los empleados del departamento 30.
+-- Emplea el formato adecuado para la salida de las cantidades numéricas.
+
+SELECT 
+    ROUND(AVG(SALARIO), 2) AS SUELDO_MEDIO,
+    COUNT(COMISION) AS NUM_COMISIONES_NO_NULAS,
+    MAX(SALARIO) AS MAXIMO_SUELDO,
+    MIN(SALARIO) AS MINIMO_SUELDO
+FROM EMPLE
+WHERE DEPT_NO = 30;
+
+-------------------------------------------------------------
+
+-- Ejercicio 2:
+-- Visualiza los temas con mayor número de ejemplares de la tabla LIBRERIA y que tengan, al menos, una 'E'.
+
+SELECT TEMA, EJEMPLARES
+FROM LIBRERIA
+WHERE TEMA LIKE '%E%'
+AND EJEMPLARES = (SELECT MAX(EJEMPLARES) FROM LIBRERIA);
+
+-------------------------------------------------------------
+
+-- Ejercicio 3:
+-- Dada la tabla MISTEXTOS, ¿qué sentencia SELECT se debe ejecutar para tener este resultado? (Ejemplo de resultado con RPAD)
+
+SELECT RPAD(TITULO, 32, '-') AS TITULO
+FROM MISTEXTOS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 4:
+-- Visualiza los títulos de la tabla MISTEXTOS sin los caracteres punto o comillas, y en minúscula, de dos formas conocidas.
+
+SELECT REPLACE(LOWER(TITULO), '.', '') AS TITULO_LIMPIO
+FROM MISTEXTOS;
+
+SELECT REPLACE(LOWER(TITULO), '"', '') AS TITULO_LIMPIO
+FROM MISTEXTOS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 5:
+-- Dada la tabla LIBROS, escribe la sentencia SELECT que visualice dos columnas, una con el AUTOR y otra con el apellido del autor.
+
+SELECT AUTOR, SUBSTR(AUTOR, INSTR(AUTOR, ',') + 2) AS APELLIDO
+FROM LIBROS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 6:
+-- Escribe la sentencia SELECT que visualice las columnas de AUTOR y otra columna con el nombre del autor (sin el apellido) de la tabla LIBROS.
+
+SELECT AUTOR, SUBSTR(AUTOR, 1, INSTR(AUTOR, ',') - 1) AS NOMBRE_AUTOR
+FROM LIBROS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 7:
+-- A partir de la tabla LIBROS, realiza una sentencia SELECT que visualice en una columna, primero el nombre del autor y luego su apellido.
+
+SELECT 
+    CONCAT(SUBSTR(AUTOR, INSTR(AUTOR, ',') + 2), 
+    CONCAT(' ', SUBSTR(AUTOR, 1, INSTR(AUTOR, ',') - 1))) AS AUTOR_NOMBRE_COMPLETO
+FROM LIBROS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 8:
+-- A partir de la tabla LIBROS, realiza una sentencia SELECT para que aparezcan los títulos ordenados por su número de caracteres.
+
+SELECT TITULO, LENGTH(TITULO) AS LONGITUD
+FROM LIBROS
+ORDER BY LENGTH(TITULO);
+
+-------------------------------------------------------------
+
+-- Ejercicio 9:
+-- Dada la tabla NACIMIENTOS, realiza una sentencia SELECT que obtenga la siguiente salida: 
+-- NOMBRE, FECHANAC, FECHA_FORMATEADA, donde FECHA_FORMATEADA tiene el formato "Nació el 12 de mayo de 1982".
+
+SELECT 
+    NOMBRE, 
+    FECHANAC, 
+    CONCAT('Nació el ', TO_CHAR(FECHANAC, 'DD "de" MONTH "de" YYYY')) AS FECHA_FORMATEADA
+FROM NACIMIENTOS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 10:
+-- Dada la tabla LIBRERIA, haz una sentencia SELECT que visualice el tema, 
+-- el último carácter del tema que no sea blanco y el número de caracteres del tema.
+
+SELECT 
+    TEMA, 
+    RTRIM(TEMA) AS ULTIMO_CARACTER, 
+    LENGTH(RTRIM(TEMA)) AS NUM_CARACTERES
+FROM LIBRERIA
+ORDER BY TEMA;
+
+-------------------------------------------------------------
+
+-- Ejercicio 11:
+-- A partir de la tabla NACIMIENTOS, visualiza en una columna el NOMBRE seguido de su fecha de nacimiento formateada.
+
+SELECT 
+    CONCAT(RTRIM(NOMBRE), ' nació el ' || TO_CHAR(FECHANAC, 'DD "de" MONTH "de" YYYY')) AS INFORMACION
+FROM NACIMIENTOS;
+
+-------------------------------------------------------------
+
+-- Ejercicio 12:
+-- Convierte la cadena '010712' a fecha y visualiza su nombre de mes en mayúsculas.
+
+SELECT UPPER(TO_CHAR(TO_DATE('010712', 'DDMMYY'), 'MONTH')) AS MES 
+FROM DUAL;
+
+-------------------------------------------------------------
+
+-- Ejercicio 13:
+-- Visualiza aquellos temas de la tabla LIBRERIA cuyos ejemplares sean 7 con el nombre de tema 'SEVEN'. 
+-- El resto de temas que no tengan 7 ejemplares se visualizarán como están.
+
+SELECT 
+    CASE 
+        WHEN EJEMPLARES = 7 THEN 'SEVEN'
+        ELSE TEMA
+    END AS TEMA_MODIFICADO
+FROM LIBRERIA;
+
+-------------------------------------------------------------
+
+-- Ejercicio 14:
+-- A partir de la tabla EMPLE, obtén el apellido de los empleados que lleven más de 15 años trabajando.
+
+SELECT APELLIDO
+FROM EMPLE
+WHERE FECHA_ALT <= ADD_MONTHS(SYSDATE, -12 * 15);
+
+-------------------------------------------------------------
+
+-- Ejercicio 15:
+-- Selecciona el apellido de los empleados de la tabla EMPLE que lleven más de 16 años trabajando en el departamento 'VENTAS'.
+
+SELECT APELLIDO
+FROM EMPLE
+WHERE DEPT_NO = (SELECT DEPT_NO FROM DEPART WHERE DNOMBRE = 'VENTAS')
+AND FECHA_ALT <= ADD_MONTHS(SYSDATE, -12 * 16);
+
+-------------------------------------------------------------
+
+-- Ejercicio 16:
+-- Visualiza el apellido, el salario y el número de departamento de aquellos empleados de la tabla EMPLE 
+-- cuyo salario sea el mayor de su departamento.
+
+SELECT APELLIDO, SALARIO, DEPT_NO
+FROM EMPLE
+WHERE SALARIO = (SELECT MAX(SALARIO) FROM EMPLE E2 WHERE E2.DEPT_NO = EMPLE.DEPT_NO);
+
+-------------------------------------------------------------
+
+-- Ejercicio 17:
+-- Visualiza el apellido, el salario y el número de departamento de aquellos empleados de la tabla EMPLE 
+-- cuyo salario supere la media en su departamento.
+
+SELECT APELLIDO, SALARIO, DEPT_NO
+FROM EMPLE
+WHERE SALARIO > (SELECT AVG(SALARIO) FROM EMPLE E2 WHERE E2.DEPT_NO = EMPLE.DEPT_NO);
