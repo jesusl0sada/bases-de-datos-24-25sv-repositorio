@@ -1,0 +1,134 @@
+(10%) Diagnósticos del paciente “Jesús Losada” con Nº de registro “2”.
+(15%) Localización de TODOS los pacientes que tengan diagnosticada la complicación “Cólico renal” de tipo “Urología”.
+(25%) Código de Pacientes que hayan sido ingresados pero todavía NO DADOS DE ALTA.
+(25%) Nombre y dirección de los pacientes que hayan sido ingresados en los últimos 30 días.
+(25%) Número total de pacientes que tengan diagnosticada la complicación “Cólico renal” de tipo “Urología” y hayan sido ingresados en los últimos 30 días.
+
+1. SELECT PACIENTE.ID_PACIENTE, PACIENTE.NOMBRE_PACIENTE, PACIENTE.NUM_REGISTRO_PACIENTE, DIAGNOSTICO.TIPO_DIAGNOSTICO, DIAGNOSTICO.COMPLICACIONES_DIAGNOSTICO
+FROM PACIENTE, DIAGNOSTICO
+WHERE PACIENTE.ID_PACIENTE = DIAGNOSTICO.ID_PACIENTE
+AND PACIENTE.NOMBRE_PACIENTE = 'Jesús Losada'
+AND PACIENTE.NUM_REGISTRO_PACIENTE = 2;
+
+ID_PACIENTE NOMBRE_PACIENTE                NUM_REGISTRO_PACIENTE
+----------- ------------------------------ ---------------------
+TIPO_DIAGNOSTICO               COMPLICACIONES_DIAGNOSTICO
+------------------------------ ------------------------------
+          2 Jesús Losada                                       2
+Neumología                     Neumonía
+
+
+2. Localización de TODOS los pacientes que tengan diagnosticada la complicación “Cólico renal” de tipo “Urología”.
+
+SELECT PACIENTE.NOMBRE_PACIENTE, PACIENTE.NUM_CAMA_PACIENTE, PACIENTE.DIRECCION_PACIENTE
+FROM PACIENTE, DIAGNOSTICO
+WHERE PACIENTE.ID_PACIENTE = DIAGNOSTICO.ID_PACIENTE
+AND DIAGNOSTICO.COMPLICACIONES_DIAGNOSTICO = 'Cólico Renal'
+AND DIAGNOSTICO.TIPO_DIAGNOSTICO = 'Urología';
+
+NOMBRE_PACIENTE                NUM_CAMA_PACIENTE
+------------------------------ -----------------
+DIRECCION_PACIENTE
+----------------------------------------
+Mario Cortes                                   5
+Calle pene
+
+
+3. Código de Pacientes que hayan sido ingresados pero todavía NO DADOS DE ALTA.
+
+Tendremos que usar una Tabla N-M con fechas de entrada y de salida.
+
+
+SELECT PACIENTE.NOMBRE_PACIENTE, PACIENTE.ID_PACIENTE
+FROM PACIENTE, SALAS_PACIENTE, SALAS
+WHERE PACIENTE.ID_PACIENTE = SALAS_PACIENTE.ID_PACIENTE
+AND SALAS_PACIENTE.FECHA_SALIDA IS NULL;
+
+
+4. Nombre y dirección de los pacientes que hayan sido ingresados en los últimos 30 días.
+
+
+SELECT PACIENTE.DIRECCION_PACIENTE, PACIENTE.NOMBRE_PACIENTE
+FROM PACIENTE, SALAS_PACIENTE
+WHERE PACIENTE.ID_PACIENTE = SALAS_PACIENTE.ID_PACIENTE
+AND SALAS_PACIENTE.FECHA_INGRESO >= SYSDATE-30;
+
+DIRECCION_PACIENTE                       NOMBRE_PACIENTE
+---------------------------------------- ------------------------------
+Calle pene                               Mario Cortes
+Calle agustin                            Jesús Losada
+
+
+5. Número total de pacientes que tengan diagnosticada la complicación “Cólico renal” de tipo “Urología” y hayan sido ingresados en los últimos 30 días.
+
+
+SELECT DISTINCT COUNT (*) AS PACIENTES_CON_COLICOS
+FROM DIAGNOSTICO, SALAS_PACIENTE
+WHERE DIAGNOSTICO.COMPLICACIONES_DIAGNOSTICO = 'Cólico Renal'
+AND DIAGNOSTICO.TIPO_DIAGNOSTICO = 'Urología'
+AND SALAS_PACIENTE.FECHA_INGRESO >= SYSDATE-30;
+
+PACIENTES_CON_COLICOS
+---------------------
+                    2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

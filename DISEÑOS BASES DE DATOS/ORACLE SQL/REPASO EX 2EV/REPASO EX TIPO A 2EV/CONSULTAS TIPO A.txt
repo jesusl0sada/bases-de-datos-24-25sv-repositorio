@@ -1,0 +1,110 @@
+1.	(10%) Libros que tenemos de la editorial “ANAYA” con más de 150 pgs
+2.	(15% ) Localización de TODOS los ejemplares de los libros de la editorial “ANAYA” con más de 150 pgs
+3.	(25%) Código de Ejemplares que hayan sido prestados pero todavía NO devueltos
+4.	(25%) Nombre y teléfono de los usuarios que hayan cogido prestado algún libro en los últimos 30 días.
+5.	(25%) Número total de autores que tengan los libros de la editorial “ANAYA” con más de 150 pgs
+
+
+
+1. Libros que tenemos de la editorial “ANAYA” con más de 150 pgs
+
+
+SELECT titulo_libro, editorial_libro
+FROM LIBRO
+WHERE UPPER(editorial_libro) = 'ANAYA'
+AND paginas_libro > 150;
+
+TITULO_LIBRO                   EDITORIAL_LIBRO
+------------------------------ ---------------
+Don Quijote                    ANAYA
+Cien años de soledad           ANAYA
+
+
+2. Localización de TODOS los ejemplares de los libros de la editorial “ANAYA” con más de 150 pgs
+
+
+SELECT LIBRO.titulo_libro, LIBRO.editorial_libro, EJEMPLAR.localizacion_ejemplar
+from LIBRO, EJEMPLAR
+WHERE LIBRO.codigo_libro = EJEMPLAR.codigo_libro
+AND UPPER(editorial_libro) = 'ANAYA'
+AND paginas_libro > 150;
+
+TITULO_LIBRO                   EDITORIAL_LIBRO
+------------------------------ ---------------
+LOCALIZACION_EJEMPLAR
+--------------------------------------------------
+Don Quijote                    ANAYA
+Sección A - Estantería 5
+
+Cien años de soledad           ANAYA
+Sección B - Estantería 2
+
+
+3. Código de Ejemplares que hayan sido prestados pero todavía NO devueltos
+
+usaremos 3 tablas: LIBRO, EJEMPLAR, USUARIO_EJEMPLAR (CONTIENE LAS FECHAS). 
+
+SELECT EJEMPLAR.codigo_ejemplar, USUARIO_EJEMPLAR.fecha_prestamo
+FROM LIBRO, EJEMPLAR, USUARIO_EJEMPLAR
+WHERE LIBRO.codigo_libro = EJEMPLAR.codigo_libro
+AND EJEMPLAR.codigo_ejemplar = USUARIO_EJEMPLAR.codigo_ejemplar
+AND USUARIO_EJEMPLAR.fecha_devolucion IS NULL;
+
+CODIGO_EJEMPLAR FECHA_PR
+--------------- --------
+            102 01/04/24
+
+
+
+4. Nombre y teléfono de los usuarios que hayan cogido prestado algún libro en los últimos 30 días.
+
+-> TABLAS QUE VAMOS A USAR: USUARIO, USUARIO_EJEMPLAR. 
+
+SELECT USUARIO.nombre_usuario, USUARIO.telefono_usuario
+FROM USUARIO, USUARIO_EJEMPLAR
+where USUARIO.codigo_usuario = USUARIO_EJEMPLAR.codigo_usuario
+AND fecha_prestamo >= SYSDATE - 30;
+
+no rows selected
+
+Vamos a probar a meter un insert para testear que la consulta funciona correctamente...
+
+INSERT INTO USUARIO_EJEMPLAR VALUES (2, 102, TO_DATE('2025-03-01', 'YYYY-MM-DD'), TO_DATE('2025-03-07', 'YYYY-MM-DD'));
+
+NOMBRE_USUARIO                                     TELEFONO_USUARIO
+-------------------------------------------------- ----------------
+Laura García                                              612345678
+
+
+
+5. Número total de autores que tengan los libros de la editorial “ANAYA” con más de 150 pgs
+
+
+-> TABLAS: AUTOR, LIBRO, AUTOR_LIBRO (ES EN LA QUE SE ENLAZAN).
+
+SELECT DISTINCT COUNT (*) AS AUTORES_LIBROS_ANAYA_MASDE150
+FROM AUTOR, LIBRO, AUTOR_LIBRO
+WHERE AUTOR.codigo_autor = AUTOR_LIBRO.codigo_autor
+AND LIBRO.codigo_libro = AUTOR_LIBRO.codigo_libro
+AND UPPER(LIBRO.editorial_libro) = 'ANAYA'
+AND LIBRO.paginas_libro > 150;
+
+AUTORES_LIBROS_ANAYA_MASDE150
+-----------------------------
+                            1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
