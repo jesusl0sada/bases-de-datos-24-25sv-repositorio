@@ -1,0 +1,102 @@
+CONSULTAS:
+
+1. Coches que tenemos de la marca “Opel” con más de 150.000 kms
+2. Localización de TODOS los clientes que hayan comprado algún
+coche de la marca “Opel” con más de 150.000 kms
+3.  Matrícula de coches que todavía NO hayan sido reparados
+4. Nombre, apellido y teléfono de los clientes que tengan algún coche
+que haya sido reparado en los últimos 30 días.
+5. Número total de clientes que tengan algún coche que haya sido
+reparado por un mecánico contratado el último año.
+
+1. Coches que tenemos de la marca “Opel” con más de 150.000 kms
+
+-> USAREMOS ÚNICAMENTE DATOS DE LA TABLA COCHE PARA LA CONSULTA, NO NECESITAMOS ENLAZAR MÁS.
+
+SELECT MATRICULA_COCHE, MODELO_COCHE, KMS_COCHE
+FROM COCHE
+WHERE KMS_COCHE > 150000
+AND UPPER(MARCA_COCHE) = 'OPEL';
+
+MATRICU MODELO_COCHE                    KMS_COCHE
+------- ------------------------------ ----------
+3566HJK Opel Astra                         155000
+
+
+2. Localización de TODOS los clientes que hayan comprado algún coche de la marca “Opel” con más de 150.000 kms
+
+-> AHORA SÍ QUE NECESITAREMOS ENLAZAR DOS TABLAS , LA DE CLIENTES Y LA DE COCHE , PARA ELLO PODEMOS USAR O BIEN
+UNA CONDICIÓN DE ENLACE CON WHERE O UN JOIN (YO VOY A USAR UNA CONDICIÓN DE ENLACE)
+
+SELECT COCHE.MATRICULA_COCHE, COCHE.MODELO_COCHE, COCHE.MARCA_COCHE, CLIENTE.NOMBRE_CLIENTE, CLIENTE.APELLIDOS_CLIENTE, CLIENTE.DIRECCION_CLIENTE
+FROM COCHE, CLIENTE
+WHERE COCHE.DNI_CLIENTE = CLIENTE.DNI_CLIENTE
+AND COCHE.KMS_COCHE > 150000
+AND UPPER(COCHE.MARCA_COCHE) = 'OPEL';
+
+MATRICU MODELO_COCHE                   MARCA_COCHE
+------- ------------------------------ -------------------------
+NOMBRE_CLIENTE            APELLIDOS_CLIENTE
+------------------------- --------------------------------------------------
+DIRECCION_CLIENTE
+----------------------------------------
+3566HJK Opel Astra                     Opel
+Jesus                     Losada Carreras
+
+
+3. Matrícula de coches que todavía NO hayan sido reparados
+
+-> NECESITAREMOS ENLAZAR DOS TABLAS, LA DE COCHE_MECANICO / REPARACIÓN CON LA DE COCHE,
+LA DE COCHE_MECANICO ES N-M CON LO CUAL ENLAZAREMOS LA FK MATRICULA_COCHE DE ESTA CON LA PK MATRICULA_COCHE DE LA TABLA COCHE
+Y QUE NO HAYAN SIDO REPARADOS -> QUE LA FECHA_REPARACION SEA NULL.
+
+SELECT COCHE.MATRICULA_COCHE
+FROM COCHE, COCHE_MECANICO
+WHERE COCHE.MATRICULA_COCHE = COCHE_MECANICO.MATRICULA_COCHE 
+AND COCHE_MECANICO.FECHA_REPARACION IS NULL;
+
+MATRICU
+-------
+3566HJK
+6653AIK  -> EN CASO DE ESTE YA HA SIDO REPARADO UNA VEZ Y AHORA ESTÁ EN REPARACIÓN PUES NO TIENE FECHA_REPARACION.
+
+-> CON EL IS NULL AL NO HABER PUESTO UNA CONSTRAINT NOS ASEGURAMOS DE QUE ESTÁ VACÍO EL CAMPO Y SABEMOS QUE SI NO HAY UNA FECHA
+ASOCIADA QUIERE DECIR QUE LA REPARACIÓN AÚN NO HA SIDO REALIZADA Y QUE ESTÁN EN ELLO.
+
+
+4. Nombre, apellido y teléfono de los clientes que tengan algún coche
+que haya sido reparado en los últimos 30 días.
+
+-> TENDREMOS QUE TRABAJAR CON LAS TABLAS: COCHE_MECANICO, CLIENTE, COCHE (Esta es necesaria 
+ya que para saber de quien es el coche debemos enlazarlo así)
+
+SELECT CLIENTE.NOMBRE_CLIENTE, CLIENTE.APELLIDOS_CLIENTE, CLIENTE.TELEFONO_CLIENTE
+FROM CLIENTE, COCHE_MECANICO, COCHE
+WHERE COCHE.DNI_CLIENTE = CLIENTE.DNI_CLIENTE
+AND COCHE.MATRICULA_COCHE = COCHE_MECANICO.MATRICULA_COCHE
+AND COCHE_MECANICO.FECHA_REPARACION >= SYSDATE-30;
+
+NOMBRE_CLIENTE            APELLIDOS_CLIENTE
+------------------------- --------------------------------------------------
+TELEFONO_CLIENTE
+----------------
+Daniel                    Lazar Vadorrey
+       976652345
+
+Mario                     Cortes Cantin
+       665236453
+
+5. Número total de clientes que tengan algún coche que haya sido
+reparado por un mecánico contratado el último año.
+
+SELECT COUNT (*) AS COCHES_REPARADOS_POR_MEC_NUEVO
+FROM COCHE_MECANICO, MECANICO
+WHERE COCHE_MECANICO.DNI_MECANICO = MECANICO.DNI_MECANICO
+AND MECANICO.FECHA_CONTRATACION_MECANICO >= SYSDATE-365;
+
+COCHES_REPARADOS_POR_MEC_NUEVO  - con esto sacamos las veces que el mecanico nuevo ha reparado.
+------------------------------
+                             1   -> ES EL ULTIMO INSERT DE MECANICO Y COCHE_MECANICO: EL MECANICO DANIEL LALANZA.
+
+Simplemente debemos unir las tablas COCHE_MECANICO Y MECANICO, no necesitamos unir mas ya que con estas tenemos un
+conteo de cuantas veces aparece esa fecha que está comprendida entre hoy y el año pasado. 
