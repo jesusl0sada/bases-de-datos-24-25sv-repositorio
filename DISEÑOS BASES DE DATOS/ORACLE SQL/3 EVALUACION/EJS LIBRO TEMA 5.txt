@@ -1,0 +1,55 @@
+TABLAS EMPLE y DEPART
+
+1. Partiendo de la tabla EMPLE, visualiza por cada oficio de los empleados del departamento ‘VENTAS’ la suma de salarios. 
+
+SELECT EMPLE.OFICIO, SUM(SALARIO) “SUMA_SALARIO”
+FROM EMPLE JOIN DEPART ON EMPLE.DEPT_NO = DEPART.DEPT_NO
+WHERE UPPER(DEPART.DNOMBRE) = ‘VENTAS’
+GROUP BY EMPLE.OFICIO
+ORDER BY EMPLE.OFICIO;
+
+2. Selecciona aquellos apellidos de la tabla EMPLE cuyo salario sea igual a la media del salario en su departamento.
+
+3. A partir de la tabla EMPLE, visualiza el número de empleados de cada departamento cuyo oficio sea 'EMPLEADO'.
+
+4. Desde la tabla EMPLE, visualiza el departamento que tenga más empleados cuyo oficio sea 'EMPLEADO'.
+
+5. A partir de las tablas EMPLE y DEPART, visualiza el número de departamento y el nombre del departamento que tenga más empleados cuyo oficio sea 'EMPLEADO'.
+
+6. Busca los departamentos que tienen más de dos personas trabajando en la misma profesión.
+
+TABLAS ALUM, ANTIGUOS y NUEVOS
+
+7. Visualiza los nombres de los alumnos de la tabla ALUM que aparezcan en estas dos tablas: ANTIGUOS y NUEVOS.
+
+8. Escribe las distintas formas en que se puede poner la consulta anterior llegando al mismo resultado.
+
+9. Visualiza aquellos nombres de la tabla ALUM que no estén en la tabla ANTIGUOS ni en la tabla NUEVOS.
+
+TABLAS PERSONAL, PROFESORES y CENTROS
+
+10. Realiza una consulta en la que aparezca por cada centro y en cada especialidad el número de profesores.
+Si el centro no tiene profesores, debe aparecer un 0 en la columna de número de profesores.
+Las columnas a visualizar son: nombre de centro, especialidad y número de profesores.
+
+11. Obtén por cada centro el número de empleados.
+Si el centro carece de empleados, ha de aparecer un 0 como número de empleados
+
+TABLAS BANCOS, SUCURSALES, CUENTAS y MOVIMIENTOS
+
+12. Obtén la especialidad con menos profesores.
+
+13. Obtén el banco con más sucursales. Los datos a obtener son:
+Nombre del banco, Nº de sucursales.
+
+14. El saldo actual de los bancos de 'GUADALAJARA'.
+Una fila por cada banco:
+Nombre del banco, Saldo Debe, Saldo Haber.
+
+15. Datos de la cuenta o cuentas con más movimientos:
+Nombre de cuenta, Nº de movimientos.
+
+16. El nombre de la sucursal que haya tenido más suma de reintegros:
+Nombre de la sucursal, Suma de reintegros.
+
+
